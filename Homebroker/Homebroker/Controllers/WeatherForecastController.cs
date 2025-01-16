@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace Market.Controllers
+namespace Homebroker.Controllers
 {
     [ApiController]
     [Route("[controller]")]
