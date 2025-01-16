@@ -1,4 +1,6 @@
 
+using Market.Infrastructure;
+
 namespace Market
 {
     public class Program
@@ -13,6 +15,8 @@ namespace Market
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddHostedService<KafkaConsumer>();
+            builder.Services.AddSingleton<KafkaProducer>();
 
             var app = builder.Build();
 
