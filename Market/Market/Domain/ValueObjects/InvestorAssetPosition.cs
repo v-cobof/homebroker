@@ -1,8 +1,14 @@
 ﻿namespace Market.Domain.ValueObjects
 {
-    public class InvestorAssetPosition
+    public record InvestorAssetPosition
     {
-        public Guid AssetId { get; set; }
+        public string AssetId { get; set; }
         public int Shares { get; set; }
+
+        public InvestorAssetPosition(string assetId, int shares)
+        {
+            AssetId = assetId;
+            Shares = shares;
+        }
     }
 }

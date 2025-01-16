@@ -2,27 +2,38 @@
 
 namespace Market.Domain.Entities
 {
-    public class Investor : Entity
+    public class Investor
     {
+        public string Id { get; private set; }
         public string Name { get; private set; }
-        public IReadOnlyCollection<InvestorAssetPosition> AssetPosition { get => _assetPosition; }
+        public IReadOnlyCollection<InvestorAssetPosition> AssetPositions { get => _assetPositions; }
 
-        private List<InvestorAssetPosition> _assetPosition { get; set; }
+        private List<InvestorAssetPosition> _assetPositions { get; set; }
 
-        public Investor(string name)
+        public Investor(string id, string name) : base()
         {
+            Id = id;
             Name = name;
-            _assetPosition = new List<InvestorAssetPosition>();
+            _assetPositions = new List<InvestorAssetPosition>();
         }
 
         public void AddAssetPosition(InvestorAssetPosition position)
         {
-            _assetPosition.Add(position);
+            _assetPositions.Add(position);
         }
 
-        public void UpdateAssetPosition(Guid assetId, int sharesAmount)
+        public void UpdateAssetPosition(string assetId, int sharesAmount)
         {
+            var assetPosition = _assetPositions.Find(t => t.AssetId == assetId);
 
+            if (assetPosition is null)
+            {
+                _assetPositions.Add(new InvestorAssetPosition(assetId, sharesAmount));
+            }
+            else
+            {
+                assetPosition.Shares += sharesAmount;
+            }
         }
     }
 }
