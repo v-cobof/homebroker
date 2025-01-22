@@ -1,25 +1,24 @@
-#See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER app
-WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
-
+# Etapa 1: Build
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["Homebroker/Homebroker.csproj", "Homebroker/"]
-RUN dotnet restore "./Homebroker/Homebroker.csproj"
-COPY . .
-WORKDIR "/src/Homebroker"
-RUN dotnet build "./Homebroker.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./Homebroker.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+# Copiar o arquivo .csproj e restaurar dependências
+COPY Homebroker.csproj ./
+RUN dotnet restore Homebroker.csproj
 
-FROM base AS final
+# Copiar todo o código-fonte
+COPY . ./
+
+# Compilar o projeto
+RUN dotnet build Homebroker.csproj -c Release -o /app/build
+
+# Etapa 2: Runtime
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=build /app/build .
+
+# Expor a porta padrão do ASP.NET Core
+EXPOSE 80
+
+# Comando de inicialização
 ENTRYPOINT ["dotnet", "Homebroker.dll"]

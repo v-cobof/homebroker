@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  mongodb:
+    image: bitnami/mongodb:latest
+    container_name: mongodb
+    ports:
+      - "27018:27017"
+    environment:
+      - MONGODB_REPLICA_SET_MODE=primary
+      - MONGODB_ADVERTISED_HOSTNAME=mongodb
+      - MONGODB_ROOT_USER=root
+      - MONGODB_ROOT_PASSWORD=rootpassword
+      - MONGODB_REPLICA_SET_KEY=replsetkey123
+    volumes:
+      - mongodb_data:/bitnami/mongodb
+
+  api:
+    build:
+      context: ./Homebroker/Homebroker # Caminho para o Dockerfile da API
+      #dockerfile: ./Homebroker/Homebroker/Dockerfile
+    container_name: homebroker-api
+    ports:
+      - "8080:8080" #Porta externa para acessar a API
+    depends_on:
+      - mongodb # Garante que o MongoDB esteja ativo antes de iniciar a API
+    environment:
+      - MONGODB_CONNECTION_STRING=mongodb://root:rootpassword@mongodb:27017
+      - ASPNETCORE_ENVIRONMENT=Development
+
+volumes:
+  mongodb_data:
+    driver: local
