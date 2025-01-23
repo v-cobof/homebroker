@@ -2,7 +2,9 @@
 
 namespace Homebroker.Application.Interfaces
 {
-    public interface IWalletService : IGenericService<Wallet>
-    { 
+    public interface IWalletService
+    {
+        public Task Create(Wallet asset);
+        public Task<IEnumerable<Wallet>> GetAll();
     }
 }

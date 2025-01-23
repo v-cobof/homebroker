@@ -1,13 +1,11 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Bson;
-
-namespace Homebroker.Domain
+﻿namespace Homebroker.Domain
 {
-    public class Asset
+    public class Asset : Entity
     {
-        [BsonId]
-        public string Id { get; set; }
+        public string Name { get; set; }
         public string Symbol { get; set; }
         public decimal Price { get; set; }
+        public ICollection<WalletAsset> WalletAssets { get; set; }
+        public ICollection<Order> Orders { get; set; }
     }
 }

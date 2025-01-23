@@ -1,20 +1,11 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
-
-namespace Homebroker.Domain
+﻿namespace Homebroker.Domain
 {
-    public class WalletAsset
+    public class WalletAsset : Entity
     {
-        [BsonRepresentation(MongoDB.Bson.BsonType.ObjectId)]
-        [BsonId]
-        public string Id { get; set; }
-
-        public string WalletId { get; set; }
-
-        public string AssetId { get; set; }
-
+        public Guid WalletId { get; set; }
+        public Wallet Wallet { get; set; }
+        public Guid AssetId { get; set; }
+        public Asset Asset { get; set; }
         public int Shares { get; set; }
-
-        // pair walletId and assetId must be unique
-
     }
 }

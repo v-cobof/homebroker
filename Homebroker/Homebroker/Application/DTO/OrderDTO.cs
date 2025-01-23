@@ -1,6 +1,5 @@
-﻿using Homebroker.Domain.Enums;
-using System.Text.Json.Serialization;
-using System.Transactions;
+﻿using Homebroker.Domain;
+using Homebroker.Domain.Enums;
 
 namespace Homebroker.Application.DTO
 {
@@ -21,5 +20,19 @@ namespace Homebroker.Application.DTO
         public string BrokerTransactionId { get; set; }
         public int NegotiatedShares { get; set; }
         public decimal Price { get; set; }
+    }
+
+    public class OrderResultDTO
+    {
+        public string Id { get; set; }
+        public string WalletId { get; set; }
+        public string AssetId { get; set; }
+        public int Shares { get; set; }
+        public decimal Price { get; set; }
+        public OrderType Type { get; set; }
+        public OrderStatus Status { get; set; }
+        public int Partial { get; set; }
+        public List<Transaction> Transactions { get; set; }
+        public Asset Asset { get; set; }
     }
 }

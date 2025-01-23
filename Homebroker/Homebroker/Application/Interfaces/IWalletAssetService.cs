@@ -3,9 +3,10 @@ using Homebroker.Domain;
 
 namespace Homebroker.Application.Interfaces
 {
-    public interface IWalletAssetService : IGenericService<WalletAsset>
+    public interface IWalletAssetService
     {
-        // incluir assets
-        public Task<IEnumerable<WalletAssetOutputDTO>> GetWalletAssetsByWalletId(string walletId);
+        public Task<IEnumerable<WalletAsset>> GetWalletAssetsByWalletId(Guid walletId);
+        public Task Create(WalletAsset asset);
+        public Task<IEnumerable<WalletAsset>> GetAll();
     }
 }

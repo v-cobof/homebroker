@@ -2,7 +2,9 @@
 
 namespace Homebroker.Application.Interfaces
 {
-    public interface IAssetsService : IGenericService<Asset>
+    public interface IAssetsService
     {
+        public Task Create(Asset asset);
+        public Task<IEnumerable<Asset>> GetAll();
     }
 }

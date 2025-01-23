@@ -2,20 +2,29 @@
 using Homebroker.Application.Interfaces;
 using Homebroker.Domain;
 using Homebroker.Domain.Interfaces;
-using MongoDB.Driver.Linq;
 
 namespace Homebroker.Application
 {
-    public class WalletAssetService : GenericService<WalletAsset>, IWalletAssetService
+    public class WalletAssetService : IWalletAssetService
     {
         private readonly IWalletAssetRepository _walletAssetRepository;
 
-        public WalletAssetService(IRepository<WalletAsset> repository, IWalletAssetRepository assetRepo) : base(repository)
+        public WalletAssetService(IWalletAssetRepository assetRepo)
         {
             _walletAssetRepository = assetRepo;
         }
 
-        public async Task<IEnumerable<WalletAssetOutputDTO>> GetWalletAssetsByWalletId(string walletId)
+        public async Task Create(WalletAsset asset)
+        {
+            await _walletAssetRepository.Create(asset);
+        }
+
+        public async Task<IEnumerable<WalletAsset>> GetAll()
+        {
+            return await _walletAssetRepository.GetAllAsync();
+        }
+
+        public async Task<IEnumerable<WalletAsset>> GetWalletAssetsByWalletId(Guid walletId)
         {
             return await _walletAssetRepository.GetWalletAssetsByWalletId(walletId);
         }

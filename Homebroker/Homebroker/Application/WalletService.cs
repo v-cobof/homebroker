@@ -4,12 +4,23 @@ using Homebroker.Domain.Interfaces;
 
 namespace Homebroker.Application
 {
-    public class WalletService : GenericService<Wallet>, IWalletService
+    public class WalletService : IWalletService
     {
-        public WalletService(IRepository<Wallet> repository) : base(repository)
+        private readonly IRepository<Wallet> _repository;
+
+        public WalletService(IRepository<Wallet> repository)
         {
+            _repository = repository;
         }
 
+        public async Task Create(Wallet asset)
+        {
+            await _repository.Create(asset);
+        }
 
+        public async Task<IEnumerable<Wallet>> GetAll()
+        {
+            return await _repository.GetAllAsync();
+        }
     }
 }

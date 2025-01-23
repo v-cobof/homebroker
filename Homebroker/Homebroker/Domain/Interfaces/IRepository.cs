@@ -1,12 +1,14 @@
-﻿namespace Homebroker.Domain.Interfaces
+﻿using System.Linq.Expressions;
+
+namespace Homebroker.Domain.Interfaces
 {
     public interface IRepository<T> where T : class
     {
         Task<IEnumerable<T>> GetAllAsync();
-        Task<T> GetByIdAsync(string id);
-        Task CreateAsync(T entity);
-        Task UpdateAsync(string id, T entity);
-        Task DeleteAsync(string id);
-        IQueryable<T> GetQueryable();
+        Task<T> GetByIdAsync(Guid id);
+        Task Create(T entity);
+        Task Update(Guid id, T entity);
+        Task Delete(Guid id);
+        Task<List<T>> GetByFilterAsync(Expression<Func<T, bool>> filter);
     }
 }

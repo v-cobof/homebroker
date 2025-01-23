@@ -4,7 +4,7 @@
     {
         PENDING,
         OPEN,
-        CLOSE,
+        CLOSED,
         FAILED
     }
 }

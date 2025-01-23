@@ -16,6 +16,12 @@ namespace Homebroker.API
             _service = service;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetByWallet(Guid walletId)
+        {
+            return Ok(await _service.GetByWallet(walletId));
+        }
+
         [HttpPost]
         public async Task<IActionResult> InitTransaction(InitTransactionDTO dto)
         {

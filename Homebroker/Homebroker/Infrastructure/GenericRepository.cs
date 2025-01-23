@@ -1,46 +1,50 @@
-﻿using Homebroker.Domain.Interfaces;
-using MongoDB.Driver;
+﻿using Homebroker.Domain;
+using Homebroker.Domain.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq.Expressions;
 
 namespace Homebroker.Infrastructure
 {
-    public class GenericRepository<T> : IRepository<T> where T : class
+    public class GenericRepository<T> : IRepository<T> where T : Entity, new()
     {
-        protected readonly IMongoCollection<T> _collection;
+        protected readonly HomebrokerDbContext Db;
+        protected readonly DbSet<T> DbSet;
 
-        public GenericRepository(IMongoClient mongoClient)
+        public GenericRepository(HomebrokerDbContext db)
         {
-            var database = mongoClient.GetDatabase("mongodb");
-            _collection = database.GetCollection<T>(typeof(T).Name);
+            Db = db;
+            DbSet = db.Set<T>();
         }
 
         public async Task<IEnumerable<T>> GetAllAsync()
         {
-            return await _collection.Find(_ => true).ToListAsync();
+            return await DbSet.ToListAsync();
         }
 
-        public async Task<T> GetByIdAsync(string id)
+        public async Task<T> GetByIdAsync(Guid id)
         {
-            return await _collection.Find(Builders<T>.Filter.Eq("_id", id)).FirstOrDefaultAsync();
+            return await DbSet.FindAsync(id);
         }
 
-        public async Task CreateAsync(T entity)
+        public async Task Create(T entity)
         {
-            await _collection.InsertOneAsync(entity);
+            DbSet.Add(entity);
         }
 
-        public async Task UpdateAsync(string id, T entity)
+        public async Task Update(Guid id, T entity)
         {
-            await _collection.ReplaceOneAsync(Builders<T>.Filter.Eq("_id", id), entity);
+            DbSet.Update(entity);
         }
 
-        public async Task DeleteAsync(string id)
+        public async Task Delete(Guid id)
         {
-            await _collection.DeleteOneAsync(Builders<T>.Filter.Eq("_id", id));
+            DbSet.Remove(new T { Id = id });
         }
 
-        public IQueryable<T> GetQueryable()
+        public async Task<List<T>> GetByFilterAsync(Expression<Func<T, bool>> filter)
         {
-            return _collection.AsQueryable();
+            return await DbSet.AsNoTracking().Where(filter).ToListAsync();
         }
     }
 }

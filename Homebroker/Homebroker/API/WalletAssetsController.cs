@@ -17,18 +17,18 @@ namespace Homebroker.API
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAssets(string walletId)
+        public async Task<IActionResult> GetAssets(Guid walletId)
         {
             return Ok(await _service.GetWalletAssetsByWalletId(walletId));
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(string walletId, WalletAssetInputDTO input)
+        public async Task<IActionResult> Post(Guid walletId, WalletAssetInputDTO input)
         {
             var walletAsset = new WalletAsset()
             {
                 WalletId = walletId,
-                AssetId = input.AssetId,
+                AssetId = Guid.Parse(input.AssetId),
                 Shares = input.Shares,
             };
 

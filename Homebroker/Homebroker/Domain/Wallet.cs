@@ -1,10 +1,9 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
-
-namespace Homebroker.Domain
+﻿namespace Homebroker.Domain
 {
-    public class Wallet
+    public class Wallet : Entity
     {
-        [BsonId]
-        public string Id { get; set; }
+        public string Name { get; set; }
+        public ICollection<WalletAsset> WalletAssets { get; set; }
+        public ICollection<Order> Orders { get; set; }
     }
 }
