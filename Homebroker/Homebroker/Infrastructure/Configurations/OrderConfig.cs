@@ -1,6 +1,7 @@
 ﻿using Homebroker.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Reflection.Emit;
 
 
 namespace Homebroker.Infrastructure.Configurations
@@ -50,6 +51,10 @@ namespace Homebroker.Infrastructure.Configurations
             builder.HasMany(o => o.Transactions)
                 .WithOne(t => t.Order)
                 .HasForeignKey(t => t.OrderId);
+
+            builder
+                .Property(o => o.Version)
+                .IsConcurrencyToken();
         }
     }
 }

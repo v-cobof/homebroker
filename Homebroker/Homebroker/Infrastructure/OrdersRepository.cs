@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Homebroker.Infrastructure
 {
-    public class OrdersRepository : GenericRepository<Order>, IOrderRepository
+    public class OrdersRepository : Repository<Order>, IOrderRepository
     {
         public OrdersRepository(HomebrokerDbContext context) : base(context)
         {

@@ -6,12 +6,14 @@ using System.Linq.Expressions;
 
 namespace Homebroker.Infrastructure
 {
-    public class GenericRepository<T> : IRepository<T> where T : Entity, new()
+    public class Repository<T> : IRepository<T> where T : Entity, new()
     {
         protected readonly HomebrokerDbContext Db;
         protected readonly DbSet<T> DbSet;
 
-        public GenericRepository(HomebrokerDbContext db)
+        public IUnitOfWork UnitOfWork { get => Db; }
+
+        public Repository(HomebrokerDbContext db)
         {
             Db = db;
             DbSet = db.Set<T>();
@@ -32,14 +34,9 @@ namespace Homebroker.Infrastructure
             DbSet.Add(entity);
         }
 
-        public async Task Update(Guid id, T entity)
+        public async Task Update(T entity)
         {
             DbSet.Update(entity);
-        }
-
-        public async Task Delete(Guid id)
-        {
-            DbSet.Remove(new T { Id = id });
         }
 
         public async Task<List<T>> GetByFilterAsync(Expression<Func<T, bool>> filter)

@@ -24,16 +24,14 @@ namespace Homebroker
             builder.Services.AddDbContext<HomebrokerDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("Postgres")));
 
-            builder.Services.AddScoped(typeof(IRepository<>), typeof(GenericRepository<>));
-            builder.Services.AddScoped<IWalletAssetRepository, WalletAssetRepository>();
+            builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            builder.Services.AddScoped<IWalletRepository, WalletRepository>();
             builder.Services.AddScoped<IOrderRepository, OrdersRepository>();
 
             builder.Services.AddScoped<IAssetsService, AssetsService>();
             builder.Services.AddScoped<IWalletService, WalletService>();
             builder.Services.AddScoped<IOrdersService, OrdersService>();
-            builder.Services.AddScoped<IWalletAssetService, WalletAssetService>();
             
-
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
