@@ -1,3 +1,4 @@
+using Homebroker.Application.DTO;
 using Homebroker.Application.Interfaces;
 using Homebroker.Domain;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +17,7 @@ namespace Homebroker.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(Asset asset)
+        public async Task<IActionResult> Post(AssetInputDTO asset)
         {
             await _service.Create(asset);
 

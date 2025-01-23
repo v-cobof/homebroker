@@ -1,4 +1,5 @@
 ﻿using Homebroker.Domain.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace Homebroker.Domain
 {
@@ -14,5 +15,8 @@ namespace Homebroker.Domain
         public OrderStatus Status { get; set; }
         public int Partial {  get; set; }
         public ICollection<Transaction> Transactions { get; set; }
+
+        [ConcurrencyCheck]
+        public int Version { get; set; }
     }
 }

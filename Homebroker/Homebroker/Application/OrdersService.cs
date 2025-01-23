@@ -8,17 +8,17 @@ namespace Homebroker.Application
 {
     public class OrdersService : IOrdersService
     {
-        private readonly IOrderRepository _repository;
         private readonly IRepository<Transaction> _transactionRepository;
         private readonly IRepository<Asset> _assetRepository;
-        private readonly IWalletAssetRepository _walletAssetRepository;
+        private readonly IOrderRepository _repository;
+        private readonly IWalletRepository _walletRepository;
 
-        public OrdersService(IOrderRepository repository, IRepository<Transaction> transactionRepository, IRepository<Asset> assetRepository, IWalletAssetRepository walletAssetRepository)
+        public OrdersService(IOrderRepository repository, IRepository<Transaction> transactionRepository, IRepository<Asset> assetRepository, IWalletRepository walletAssetRepository)
         {
             _repository = repository;
             _transactionRepository = transactionRepository;
             _assetRepository = assetRepository;
-            _walletAssetRepository = walletAssetRepository;
+            _walletRepository = walletAssetRepository;
         }
 
         // must be a DB transaction (atomic)
@@ -30,7 +30,7 @@ namespace Homebroker.Application
 
             order.Partial -= dto.NegotiatedShares;
 
-            await _repository.Update(order.Id, order); // filter on the WHERE of the update, version == order.version, to check if version changed since you queried the order
+            await _repository.Update(order); // filter on the WHERE of the update, version == order.version, to check if version changed since you queried the order
 
             var transaction = new Transaction()
             {
@@ -49,9 +49,9 @@ namespace Homebroker.Application
             {
                 var asset = await _assetRepository.GetByIdAsync(order.AssetId);
                 asset.Price = dto.Price;
-                await _assetRepository.Update(asset.Id, asset);
+                await _assetRepository.Update(asset);
 
-                var walletAsset = (await _walletAssetRepository.GetByFilterAsync(t => t.AssetId == order.AssetId && t.WalletId == order.WalletId)).FirstOrDefault();
+                var walletAsset = await _walletRepository.GetWalletAssetByWalletIdAndAssetId(order.WalletId, order.AssetId);
 
                 if (walletAsset is not null)
                 {                  
@@ -59,7 +59,7 @@ namespace Homebroker.Application
                         ? walletAsset.Shares + order.Shares
                         : walletAsset.Shares - order.Shares;
 
-                    await _walletAssetRepository.Update(walletAsset.Id, walletAsset);
+                    await _walletRepository.UpdateWalletAsset(walletAsset);
                 }
                 else
                 {
@@ -71,14 +71,43 @@ namespace Homebroker.Application
                         Shares = dto.NegotiatedShares,
                     };
 
-                    await _walletAssetRepository.Create(newWalletAsset);
+                    await _walletRepository.CreateWalletAsset(newWalletAsset);
                 }
             }
+
+            await _walletRepository.UnitOfWork.Commit();
         }
 
-        public async Task<IEnumerable<Order>> GetByWallet(Guid walletId)
+        public async Task<IEnumerable<OrderResultDTO>> GetByWallet(Guid walletId)
         {
-            return await _repository.GetByWallet(walletId);
+            var orders = await _repository.GetByWallet(walletId);
+
+            return orders.Select(o => new OrderResultDTO()
+            {
+                AssetId = o.AssetId.ToString(),
+                Asset = new AssetResultDTO()
+                {
+                    Id = o.Asset.Id,
+                    Name = o.Asset.Name,
+                    Price = o.Asset.Price,
+                    Symbol = o.Asset.Symbol
+                },
+                Id = o.Id.ToString(),
+                Price = o.Price,
+                Partial = o.Partial,
+                Shares = o.Shares,
+                Status = o.Status,
+                Type = o.Type,
+                WalletId = o.WalletId.ToString(),
+                Transactions = o.Transactions.Select(t =>  new TransactionDTO()
+                {
+                    BrokerTransactionId = t.BrokerTransactionId,
+                    Shares = t.Shares,
+                    Price = t.Price,
+                    InvestorId = t.InvestorId,
+                    OrderId = t.OrderId
+                }).ToList()                
+            });
         }
 
         public async Task<Order> InitTransaction(InitTransactionDTO dto)
@@ -95,7 +124,7 @@ namespace Homebroker.Application
             };
 
             await _repository.Create(order);
-
+            await _repository.UnitOfWork.Commit();
             return order;
         }
     }

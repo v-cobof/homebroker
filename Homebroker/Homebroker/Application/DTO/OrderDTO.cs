@@ -32,7 +32,7 @@ namespace Homebroker.Application.DTO
         public OrderType Type { get; set; }
         public OrderStatus Status { get; set; }
         public int Partial { get; set; }
-        public List<Transaction> Transactions { get; set; }
-        public Asset Asset { get; set; }
+        public List<TransactionDTO> Transactions { get; set; }
+        public AssetResultDTO Asset { get; set; }
     }
 }

@@ -7,6 +7,6 @@ namespace Homebroker.Application.Interfaces
     {
         public Task<Order> InitTransaction(InitTransactionDTO dto);
         public Task ExecuteTransaction(InputExecuteTransactionDto dto);
-        public Task<IEnumerable<Order>> GetByWallet(Guid walletId);
+        public Task<IEnumerable<OrderResultDTO>> GetByWallet(Guid walletId);
     }
 }

@@ -17,9 +17,10 @@ namespace Homebroker.API
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetByWallet(Guid walletId)
+        public async Task<IActionResult> GetByWallet([FromQuery] Guid walletId)
         {
-            return Ok(await _service.GetByWallet(walletId));
+            var res = await _service.GetByWallet(walletId);
+            return Ok(res);
         }
 
         [HttpPost]
