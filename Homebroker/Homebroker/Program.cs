@@ -3,7 +3,8 @@ using Homebroker.Application;
 using Homebroker.Application.Interfaces;
 using Homebroker.Domain.Interfaces;
 using Homebroker.Infrastructure;
-using MongoDB.Driver;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace Homebroker
 {
@@ -20,11 +21,12 @@ namespace Homebroker
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            var mongoConnectionString = Environment.GetEnvironmentVariable("MONGODB_CONNECTION_STRING");
+            builder.Services.AddDbContext<HomebrokerDbContext>(options =>
+                options.UseNpgsql(builder.Configuration.GetConnectionString("Postgres")));
 
-            builder.Services.AddSingleton<IMongoClient>(sp => new MongoClient(mongoConnectionString));
             builder.Services.AddScoped(typeof(IRepository<>), typeof(GenericRepository<>));
             builder.Services.AddScoped<IWalletAssetRepository, WalletAssetRepository>();
+            builder.Services.AddScoped<IOrderRepository, OrdersRepository>();
 
             builder.Services.AddScoped<IAssetsService, AssetsService>();
             builder.Services.AddScoped<IWalletService, WalletService>();

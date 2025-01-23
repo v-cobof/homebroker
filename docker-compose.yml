@@ -1,32 +1,35 @@
 version: '3.8'
 services:
-  mongodb:
-    image: bitnami/mongodb:latest
-    container_name: mongodb
-    ports:
-      - "27018:27017"
+  postgres:
+    image: postgres:alpine
+    container_name: postgres-alpine
+    restart: always
     environment:
-      - MONGODB_REPLICA_SET_MODE=primary
-      - MONGODB_ADVERTISED_HOSTNAME=mongodb
-      - MONGODB_ROOT_USER=root
-      - MONGODB_ROOT_PASSWORD=rootpassword
-      - MONGODB_REPLICA_SET_KEY=replsetkey123
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: mydatabase
+    ports:
+      - "5432:5432"
     volumes:
-      - mongodb_data:/bitnami/mongodb
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - postgres_network
 
   api:
     build:
-      context: ./Homebroker/Homebroker # Caminho para o Dockerfile da API
-      #dockerfile: ./Homebroker/Homebroker/Dockerfile
+      context: ./Homebroker/Homebroker
     container_name: homebroker-api
     ports:
-      - "8080:8080" #Porta externa para acessar a API
+      - "8080:8080" 
     depends_on:
-      - mongodb # Garante que o MongoDB esteja ativo antes de iniciar a API
+      - postgres 
     environment:
-      - MONGODB_CONNECTION_STRING=mongodb://root:rootpassword@mongodb:27017
+      - ConnectionStrings__Postgres=Host=postgres;Port=5432;Database=mydatabase;Username=admin;Password=secret
       - ASPNETCORE_ENVIRONMENT=Development
 
 volumes:
-  mongodb_data:
-    driver: local
+  postgres_data:
+
+networks:
+  postgres_network:
+    driver: bridge
